@@ -14,8 +14,10 @@ export default class UserController {
 	}
 
 	public static async showUserDetail(ctx: Context) {
-		const userRepository = getManager().getRepository(User);
-		const user = await userRepository.findOne(ctx.params.id);
+		const user = await getManager()
+		  .createQueryBuilder(User, 'user')
+		  .where("user.id = :id", { id: ctx.params.id })
+		  .getOne();
 
 		if (user) {
 			ctx.status = 200;
@@ -26,9 +28,20 @@ export default class UserController {
 	}
 
 	public static async updateUser(ctx: Context) {
+		const userId = +ctx.params.id;
+
+		if (userId !== +ctx.state.user.id) {
+			ctx.status = 403;
+			ctx.body = { message: '无权进行此操作' };
+			return;
+		}
+
 		const userRepository = getManager().getRepository(User);
 		await userRepository.update(ctx.params.id, ctx.request.body as User);
-		const updatedUser = await userRepository.findOne(ctx.params.id);
+		const updatedUser = await userRepository
+		  .createQueryBuilder("user")
+		  .where("user.id = :id", { id: ctx.params.id })
+		  .getOne();
 
 		if (updatedUser) {
 			ctx.status = 200;
@@ -39,6 +52,14 @@ export default class UserController {
 	}
 
 	public static async deleteUser(ctx: Context) {
+		const userId = +ctx.params.id;
+
+		if (userId !== +ctx.state.user.id) {
+			ctx.status = 403;
+			ctx.body = { message: '无权进行此操作' };
+			return;
+		}
+
 		const userRepository = getManager().getRepository(User);
 		await userRepository.delete(ctx.params.id);
 

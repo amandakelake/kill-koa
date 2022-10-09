@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 import Koa from 'koa';
 import cors from '@koa/cors';
+import jwt from 'koa-jwt';
 import bodyParser from 'koa-bodyparser';
 import { logger } from './middlewares/logger';
-import router from './routes/routes';
+import { unauthRouter, authRouter } from './routes/routes';
 import { createConnection } from 'typeorm';
+import { JWT_SECRET } from './constants/jwt';
 
 createConnection().then(() => {
 	const app = new Koa();
@@ -13,7 +15,11 @@ createConnection().then(() => {
 	app.use(cors());
 	app.use(bodyParser());
 
-	app.use(router.routes()).use(router.allowedMethods());
+	app.use(unauthRouter.routes()).use(unauthRouter.allowedMethods());
+	// 注册 JWT 中间件, get请求不需要验证token
+	app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
+	// 需要 JWT Token 才可访问的路由
+	app.use(authRouter.routes()).use(authRouter.allowedMethods());
 
 	app.listen(3000);
 }).catch(err => {
