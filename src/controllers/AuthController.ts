@@ -4,6 +4,7 @@ import { getManager } from 'typeorm';
 import { User } from '../entity/user';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../constants/jwt';
+import { UnauthorizedException } from '../common/exceptions';
 
 export default class AuthController {
 	public static async login(ctx: Context) {
@@ -18,14 +19,12 @@ export default class AuthController {
 		  .getOne();
 
 		if (!user) {
-			ctx.status = 401;
-			ctx.body = { message: '用户名不存在' };
+			throw new UnauthorizedException('用户名不存在')
 		} else if (await argon2.verify(user.password, reqBody.password)) {
 			ctx.status = 200;
 			ctx.body = { token: jwt.sign({ id: user.id }, JWT_SECRET), id: user.id };
 		} else {
-			ctx.status = 401;
-			ctx.body = { message: '密码错误' };
+			throw new UnauthorizedException('密码错误')
 		}
 	}
 
