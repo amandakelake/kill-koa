@@ -14,5 +14,5 @@
     "NODE_ENV": "development"
   },
   "ext": "js,ts,json",
-  "verbose": true
+  "verbose": false
 }
