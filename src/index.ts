@@ -7,6 +7,7 @@ import { logger } from './middlewares/logger';
 import { unauthRouter, authRouter } from './routes/routes';
 import { createConnection } from 'typeorm';
 import { JWT_SECRET } from './constants/jwt';
+import chalk from 'chalk';
 
 createConnection().then(() => {
 	const app = new Koa();
@@ -32,9 +33,9 @@ createConnection().then(() => {
 	// 需要 JWT Token 才可访问的路由
 	app.use(authRouter.routes()).use(authRouter.allowedMethods());
 
-
-
-	app.listen(3000);
+	app.listen(3000, async () => {
+		console.log(chalk.blue(`server is running: http://localhost:3000`));
+	});
 }).catch(err => {
 	console.log('typeOrm connection error: ', err);
 });

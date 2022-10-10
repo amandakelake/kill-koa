@@ -5,6 +5,9 @@ import UserController from '../controllers/UserController';
 export const unauthRouter = new Router();
 export const authRouter = new Router();
 
+unauthRouter.get('/', (ctx) => {
+	ctx.body = `Hello , let's kill Koa`;
+});
 unauthRouter.post('/auth/login', AuthController.login);
 unauthRouter.post('/auth/register', AuthController.register);
 
