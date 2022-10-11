@@ -1,0 +1,5 @@
+let proto = {};
+
+export {
+	proto,
+};
