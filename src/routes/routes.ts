@@ -13,6 +13,7 @@ unauthRouter.post('/auth/login', AuthController.login);
 unauthRouter.post('/auth/register', AuthController.register);
 
 authRouter.get('/users', UserController.listUsers);
+authRouter.get('/user/me', UserController.getUserInfo);
 authRouter.get('/user/detail/:id', UserController.showUserDetail);
 authRouter.post('/user/edit/:id', UserController.updateUser);
 authRouter.post('/user/del/:id', UserController.deleteUser);

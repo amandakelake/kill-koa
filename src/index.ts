@@ -29,8 +29,8 @@ createConnection().then(() => {
 
     app.use(unauthRouter.routes()).use(unauthRouter.allowedMethods());
     // 注册 JWT 中间件, get请求不需要验证token
-    // app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
-    app.use(jwt({ secret: JWT_SECRET }));
+    app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
+    // app.use(jwt({ secret: JWT_SECRET }));
     // 需要 JWT Token 才可访问的路由
     app.use(authRouter.routes()).use(authRouter.allowedMethods());
 

@@ -23,9 +23,9 @@ export default class AuthController {
         } else if (await argon2.verify(user.password, reqBody.password)) {
             ctx.status = 200;
             ctx.body = {
-                token: jwt.sign({ id: user.id }, JWT_SECRET),
+                token: jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2h' }),
                 id: user.id,
-                username: user.username
+                username: user.username,
             };
         } else {
             throw new UnauthorizedException('密码错误');
