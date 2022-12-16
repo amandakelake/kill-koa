@@ -14,7 +14,7 @@ export default class AuthController {
 
         const user = await userRepository
             .createQueryBuilder()
-            .where({ name: reqBody.name })
+            .where({ username: reqBody.username })
             .addSelect('User.password')
             .getOne();
 
@@ -22,7 +22,11 @@ export default class AuthController {
             throw new UnauthorizedException('用户名不存在');
         } else if (await argon2.verify(user.password, reqBody.password)) {
             ctx.status = 200;
-            ctx.body = { token: jwt.sign({ id: user.id }, JWT_SECRET), id: user.id };
+            ctx.body = {
+                token: jwt.sign({ id: user.id }, JWT_SECRET),
+                id: user.id,
+                username: user.username
+            };
         } else {
             throw new UnauthorizedException('密码错误');
         }
@@ -31,14 +35,14 @@ export default class AuthController {
     public static async register(ctx: Context) {
         const userRepository = getManager().getRepository(User);
         const newUser = new User();
-        const { name, email, password } = ctx.request.body as Record<string, any>;
-        newUser.name = name || '';
+        const { username, email, password } = ctx.request.body as Record<string, any>;
+        newUser.username = username || '';
         newUser.email = email || '';
         newUser.password = await argon2.hash(password);
 
         const user = await userRepository.save(newUser);
 
-        ctx.status = 201;
+        ctx.status = 200;
         ctx.body = user;
     }
 }
